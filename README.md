@@ -241,7 +241,7 @@ To use the stock Node.js image builder do the following.
    ```
 
 ## Pivotal Cloud Foundry
-1. Update sample Cloud Foundry `manifest.yml` match to your cloud foundry environment.
+1. Update sample Cloud Foundry `manifest.yml` to match to your cloud foundry environment.
 1. Update `vars-sample.yml` to match your cloud foundry environment.
 1. Run `npm install` if you have to get all the required NPM modules (this may be needed if you are running in corporate environment where access to public NPM has been blocked).
 1. Create an instance of Redis for Pivotal Cloud Foundry (PCF) or use one if it already exists in the CF Space redis-commander will be deployed.
