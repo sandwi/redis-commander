@@ -1,0 +1,14 @@
+applications:
+- name: redis-commander
+  #buildpack: nodejs_buildpack_offline
+  command: node bin/redis-commander.js
+  disk_quota: 1G
+  instances: 1
+  memory: 1G
+  routes:
+  - route: ((cfroute))
+  #path: .
+  services:
+  - ((redis-service))
+  #- NR_DEV
+  env:

@@ -1,0 +1,2 @@
+cfroute: redis-commander.cf-apps.cfapps.io
+redis-service: my--redis-service
