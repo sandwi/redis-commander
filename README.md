@@ -240,6 +240,17 @@ To use the stock Node.js image builder do the following.
    oc delete all --selector appl=redis-commander-dev1
    ```
 
+## Pivotal Cloud Foundry
+1. Use the sample Cloud Foundry `manifest.yml`, update to your cloud foundry environment.
+1. Update `vars-sample.yml`, update to your cloud foundry environment.
+1. Run `npm install` if have to get all the required NPM modules.
+1. Create an instance of Redis for Pivotal Cloud Foundry (PCF) or use if one already exists in the CF Space redis-commander will be deployed.
+   * ```cf create-service p-redis dedicated-vm my-redis-instance```.
+   * Update `vars-sample.yml` as needed.
+1. Push to app to Cloud Foundry:
+   * ```cf push redis-commander -f manifest.yml --vars-file vars-sample.yml```
+1. Access redis-commander using the route that was specified in the manifest: https://((cfroute))
+
 ## Build images based on this one
 
 To use this images as a base image for other images you need to call "apk update" inside your Dockerfile
