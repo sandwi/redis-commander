@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+//#!/usr/bin/env node
 
 'use strict';
 
@@ -12,6 +12,14 @@ process.chdir( path.join(__dirname, '..') );
 
 process.env.ALLOW_CONFIG_MUTATIONS = true;
 let config = require('config');
+
+// Pivotal Cloud Foundry Services parsing
+let vcapServices = JSON.parse(process.env.VCAP_SERVICES);
+console.log("vcapServices: ");
+console.log(vcapServices);
+let pcfRedisServices = vcapServices["p-redis"];
+console.log(" Found " + pcfRedisServices.length + " pcfRedisServices:");
+// End Pivotal Cloud Foundry Services parsing
 
 let redisConnections = [];
 
@@ -326,7 +334,8 @@ function startAllConnections() {
   }
 
   // first default connections from config object
-  // second connection from cli params (redis-host, redis-port, ...)
+  // second Pivotal Cloud Foundry Redis service instances
+  // third connection from cli params (redis-host, redis-port, ...)
   startDefaultConnections(config.connections, function (err) {
     if (err) {
       console.log(err);
@@ -392,6 +401,32 @@ function startAllConnections() {
         }
         setUpConnection(client, db);
       }
+    } else if(pcfRedisServices.length > 0) {
+        // Running on Pivotal Cloud Foundry, bound to Redis service instances
+        // setup Redis service connection
+        let db = 0;
+        pcfRedisServices.map( (redis) => {
+            console.log("PCF Redis Instance " + db + ": " + redis.instance_name);
+            console.log("redis host: " + redis.credentials.host);
+            console.log("redis port: " + redis.credentials.port);
+            console.log("redis password: " + redis.credentials.password);
+            client = new Redis({
+                port: redis.credentials.port,
+                host: redis.credentials.host,
+                tls: {},
+                family: 4,
+                password: redis.credentials.password,
+                db: db,
+                connectionName: redis.instance_name,
+                retryStrategy: function (times) {
+                    return 1000;
+                }
+            });
+            client.label = redis.instance_name;
+            redisConnections.push(client);
+            setUpConnection(client, db);
+            db++;
+        });
     } else if (config.connections.length === 0) {
       // fallback to localhost if nothing els configured
       client = new Redis();
