@@ -413,7 +413,6 @@ function startAllConnections() {
             client = new Redis({
                 port: redis.credentials.port,
                 host: redis.credentials.host,
-                tls: {},
                 family: 4,
                 password: redis.credentials.password,
                 db: db,
