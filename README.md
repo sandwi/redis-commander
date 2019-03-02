@@ -1,18 +1,29 @@
 # Redis Commander
 
-Redis management tool written in node.js
+This project is fork of open source redis-commander project: http://joeferner.github.io/redis-commander/.
+
+This fork adds support for running redis-commander on PCF by automatically registering connection(s) to Redis Service instance(s) the redis-commander app is bound to at the time of pushing to PCF.
+
+Redis management tool written in node.js, hence it requires node and npm or yarn to be installed. Follow instructions to install node (see Node download page `https://nodejs.org/en/download/`).
+It is recommended to use a package manager for the OS/Platform where you are installing node, like `Homebrew` for MaxOS X or `apt` for ubuntu/debian or `rpm` for RHEL.
 
 # Install and Run
-
+## To install globally on your machine
 ```bash
 $ npm install -g redis-commander
 $ redis-commander
 ```
 
+## To run from the project directory
+```bash
+$ npm install
+$ node bin/redis-commander.js
+```
+
 # Usage
 
 ```
-$ redis-commander --help
+$ redis-commander --help or node bin/redis-commander.js --help
 Options:
   --redis-port                         The port to find redis on.               [string]
   --redis-host                         The host to find redis on.               [string]
@@ -219,6 +230,16 @@ containers:
     containerPort: 8081
 ```
 
+## Pivotal Cloud Foundry
+1. Update sample Cloud Foundry `manifest.yml` to match your cloud foundry environment.
+1. Create a new `vars-{env}.yml` file using `vars-sample.yml` to match your cloud foundry environment.
+1. Run `npm install` if you have to get all the required NPM modules (this may be needed if you are running in corporate environment where access to public NPM has been blocked).
+1. Create an instance of Redis for Pivotal Cloud Foundry (PCF) or use one if it already exists in the CF Space to which redis-commander will be deployed.
+   * ```cf create-service p-redis dedicated-vm my-redis-instance```.
+1. Push `redis-commander` to Cloud Foundry:
+   * ```cf push redis-commander -f manifest.yml --vars-file vars-{env}.yml```.
+1. Access redis-commander using the route that was specified in the manifest: `https://((cfroute))`.
+
 ## OpenShift V3
 
 To use the stock Node.js image builder do the following.
@@ -239,17 +260,6 @@ To use the stock Node.js image builder do the following.
    ```bash
    oc delete all --selector appl=redis-commander-dev1
    ```
-
-## Pivotal Cloud Foundry
-1. Update sample Cloud Foundry `manifest.yml` to match to your cloud foundry environment.
-1. Update `vars-sample.yml` to match your cloud foundry environment.
-1. Run `npm install` if you have to get all the required NPM modules (this may be needed if you are running in corporate environment where access to public NPM has been blocked).
-1. Create an instance of Redis for Pivotal Cloud Foundry (PCF) or use one if it already exists in the CF Space redis-commander will be deployed.
-   * ```cf create-service p-redis dedicated-vm my-redis-instance```.
-   * Update `vars-sample.yml` as needed.
-1. Push `redis-commander` to Cloud Foundry:
-   * ```cf push redis-commander -f manifest.yml --vars-file vars-sample.yml```.
-1. Access redis-commander using the route that was specified in the manifest: `https://((cfroute))`.
 
 ## Build images based on this one
 
